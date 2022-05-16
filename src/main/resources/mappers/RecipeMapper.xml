@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.petkit.mapper.RecipeMapper">
+	<select id="getRecipeList">
+		SELECT r.r_id, r.pro_id, r_name, r.img, r.time, b.cnt AS r_cnt, b.star, t.price FROM recipe AS r INNER JOIN (SELECT COUNT(*) AS cnt, AVG(star) AS star FROM reviews GROUP BY r_id) AS b left JOIN (SELECT pro_id, price from product) AS t ON r.pro_id=t.pro_id;;
+	</select>
+	<select id="getRecipe" parameterType="int" resultType="java.util.HashMap">
+		SELECT * FROM recipe WHERE r_id=#{r_id};
+	</select>
+	<select id="getRecipeKit" parameterType="int" resultType="java.util.HashMap">
+		SELECT * FROM recipe WHERE r_id=#{r_id};
+	</select>
+	
+	<select id="getRecipeReview" parameterType="int" resultType="java.util.HashMap">
+		SELECT * FROM reviews WHERE r_id=#{r_id};
+	</select>
+	<select id="getRecipeQNA" parameterType="int" resultType="java.util.HashMap">
+		SELECT * FROM question WHERE r_id=#{r_id};
+	</select>
+</mapper>

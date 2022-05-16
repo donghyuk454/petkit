@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.petkit.mapper.UserMapper">
+	<select id="getUser" parameterType="String" resultType="UserDTO">
+  		SELECT * FROM user WHERE u_email=#{email} AND passwd=#{passwd};
+  	</select>
+  	<insert id="addUser" parameterType="UserDTO"> 
+        INSERT INTO user VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM user) AS t), #{u_id}, #{u_email}, #{passwd}, #{u_name}, #{phone}, #{alarm}, #{u_gender}, #{u_birth}, #{main_pet});
+    </insert>
+    <update id="setUser" parameterType="UserDTO">
+  		UPDATE user
+  		<trim prefix="SET" suffixOverrides=",">
+	  		<if test='passwd != null'>
+	  			passwd=#{passwd},
+	  		</if>
+	  		<if test='u_name != null'>
+	  			u_name=#{u_name},
+	  		</if>
+	  		<if test='phone != null'>
+	  			phone=#{phone},
+	  		</if>
+	  		<if test='alarm != null'>
+	  			alarm=#{alarm},
+	  		</if>
+	  		<if test='u_gender != null'>
+	  			u_gender=#{u_gender},
+	  		</if>
+	  		<if test='u_birth != null'>
+	  			u_birth=#{u_birth},
+	  		</if>
+	  		<if test='main_pet != null'>
+	  			main_pet=#{main_pet}
+	  		</if>
+  		</trim>
+  		WHERE u_id=#{u_id};
+  	</update>
+  	<delete id="deleteUser" parameterType="int">
+  		DELETE FROM user WHERE u_id=#{u_id};
+  	</delete>
+  	
+  	
+  	<select id="getUserPet" parameterType="int" resultType="PetDTO">
+  		SELECT * FROM pet WHERE u_id=#{u_id} AND p_id=#{p_id};
+  	</select>
+  	<insert id="addUserPet" parameterType="PetDTO"> 
+        INSERT INTO pet VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM pet) AS t), #{p_id}, #{u_id}, #{is_main}, #{p_name}, #{breed}, #{breed_detail}, #{p_gender}, #{p_birth}, #{is_preg}, #{is_neut}, #{sur1}, #{sur2}, #{sur3});
+    </insert>
+    <update id="petReset" parameterType="int">
+    	UPDATE pet SET is_main=0 WHERE u_id=#{u_id};
+    </update>   
+    <update id="setUserPet" parameterType="PetDTO">
+  		UPDATE pet
+  		<trim prefix="SET" suffixOverrides=",">
+  			<if test='is_main != null'>
+  				is_main=#{is_main},
+  			</if>
+	  		<if test='p_name != null'>
+	  			p_name=#{p_name},
+	  		</if>
+	  		<if test='breed != null'>
+	  			breed=#{breed},
+	  		</if>
+	  		<if test='breed_detail != null'>
+	  			breed_detail=#{breed_detail},
+	  		</if>
+	  		<if test='p_gender != null'>
+	  			p_gender=#{p_gender},
+	  		</if>
+	  		<if test='p_birth != null'>
+	  			p_birth=#{p_birth},
+	  		</if>
+	  		<if test='is_preg != null'>
+	  			is_preg=#{is_preg},
+	  		</if>
+	  		<if test='is_neut != null'>
+	  			is_neut=#{is_neut},
+	  		</if>
+	  		<if test='sur1 != null'>
+	  			sur1=#{sur1},
+	  		</if>
+	  		<if test='sur2 != null'>
+	  			sur2=#{sur2},
+	  		</if>
+	  		<if test='sur3 != null'>
+	  			sur3=#{sur3}
+  			</if>
+  		</trim>
+  		WHERE u_id=#{u_id} AND p_id=#{p_id};
+  	</update>
+  	<select id="getIsMainPet" parameterType="int" resultType="int">
+  		SELECT * FROM (SELECT IFNULL(is_main, -1) FROM pet WHERE u_id=#{u_id} AND p_id=#{p_id}) as t;
+  	</select>
+  	<select id="getPetCnt" parameterType="int" resultType="int">
+  		SELECT COUNT(*) FROM pet WHERE u_id=#{u_id};
+  	</select>
+  	<update id="setNewMainPet" parameterType="int">
+  		UPDATE pet SET is_main=1 WHERE u_id=#{u_id} AND p_id=(SELECT * FROM (SELECT IFNULL(MIN(p_id), -1) FROM pet WHERE u_id=#{u_id} AND is_main=0) as t);
+  	</update>
+  	<select id="getMainPet" parameterType="int" resultType="int">
+  		SELECT p_id FROM pet WHERE u_id=#{u_id} AND is_main=1;
+  	</select>
+  	<update id="changeUserMainPet" parameterType="int">
+  		UPDATE user SET main_pet=#{p_id} WHERE u_id=#{u_id};
+  	</update>
+  	<update id="changeUserMainPetNULL" parameterType="int">
+  		UPDATE user SET main_pet=null WHERE u_id=#{u_id};
+  	</update>
+  	<delete id="deleteUserPet" parameterType="int">
+  		DELETE FROM pet WHERE u_id=#{u_id} AND p_id=#{p_id};
+  	</delete>
+  	<select id="getUserPetList" parameterType="int" resultType="java.util.HashMap">
+  		SELECT * FROM PET WHERE u_id=#{u_id};
+  	</select>
+  	<select id="getPetName" parameterType="int" resultType="String">
+  		SELECT p_name FROM PET WHERE p_id=(SELECT main_pet FROM USER WHERE u_id=#{u_id});
+  	</select>
+  	
+  	
+  	<select id="getUsedCoupon" parameterType="int" resultType="java.util.HashMap">
+  		SELECT A.c_id, B.c_name, B.pro_id, C.name, B.discount, B.discount_rate, A.term_start, A.term_end, A.is_avail FROM (SELECT * FROM user_coupon WHERE u_id=#{u_id} AND is_avail=0) A JOIN coupon B ON A.c_id=B.c_id JOIN product C ON B.pro_id=C.pro_id ORDER BY A.c_id;
+  	</select>
+  	<select id="getUnuseCoupon" parameterType="int" resultType="java.util.HashMap">
+  		SELECT A.c_id, B.c_name, B.pro_id, C.name, B.discount, B.discount_rate, A.term_start, A.term_end, A.is_avail FROM (SELECT * FROM user_coupon WHERE u_id=#{u_id} AND is_avail=1) A JOIN coupon B ON A.c_id=B.c_id JOIN product C ON B.pro_id=C.pro_id ORDER BY A.c_id;
+  	</select>
+  	
+  	<select id="getUserCoupon" parameterType="int" resultType="UserCouponDTO">
+  		SELECT A.c_id, B.c_name, B.pro_id, C.name, B.discount, B.discount_rate, A.term_start, A.term_end, A.is_avail FROM (SELECT * FROM user_coupon WHERE u_id=#{u_id} AND c_id=#{c_id}) A JOIN coupon B ON A.c_id=B.c_id JOIN product C ON B.pro_id=C.pro_id ORDER BY A.c_id;;
+  	</select>
+  	<insert id="addUserCoupon" parameterType="UserCouponDTO"> 
+        INSERT INTO user_coupon VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM user_coupon) AS t), #{c_id}, #{u_id}, #{is_avail}, #{term_start}, #{term_end});
+    </insert>
+    <update id="useCoupon" parameterType="UserCouponDTO">
+  		UPDATE user_coupon SET is_avail=0 WHERE u_id=#{u_id} AND c_id=#{c_id};
+  	</update>
+  	<delete id="deleteUserCoupon" parameterType="int">
+  		DELETE FROM user_coupon WHERE u_id=#{u_id} AND c_id=#{c_id};
+  	</delete>
+  	
+  	
+  	<select id="getLikeList" parameterType="int" resultType="java.util.HashMap">
+  		SELECT * FROM userlike WHERE u_id=#{u_id};
+  	</select>
+  	<select id="isLike" parameterType="int" resultType="int">
+  		SELECT COUNT(*) FROM userlike where u_id=#{u_id} AND r_id=#{r_id};
+  	</select>
+  	<insert id="addUserLike" parameterType="int">
+  		INSERT INTO userlike VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM userlike) AS t), #{u_id}, #{r_id});
+  	</insert>
+  	<delete id="deleteUserLike" parameterType="int">
+  		DELETE FROM userlike WHERE u_id=#{u_id} AND r_id=#{r_id};
+  	</delete>
+  	
+  	
+  	<select id="getBasketList" parameterType="int" resultType="java.util.HashMap">
+  		SELECT * FROM basket WHERE u_id=#{u_id};
+  	</select>
+  	<select id="getBasketCnt" parameterType="int" resultType="int">
+  		SELECT COUNT(*) FROM basket WHERE u_id=#{u_id};
+  	</select>
+  	<insert id="addBasket" parameterType="BasketDTO"> 
+        INSERT INTO basket VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM basket) AS t), #{b_id}, #{u_id}, #{pro_id}, #{cnt});
+    </insert>
+    <update id="setBasket" parameterType="BasketDTO">
+  		UPDATE basket
+  		<trim prefix="SET" suffixOverrides=",">
+  			<if test='cnt != null'>
+  				cnt=#{cnt}
+  			</if>
+  		</trim>
+  		WHERE u_id=#{u_id} AND b_id=#{b_id};
+  	</update>
+  	<delete id="deleteBasket" parameterType="int">
+  		DELETE FROM basket WHERE u_id=#{u_id} AND b_id=#{b_id};
+  	</delete>
+
+ 	
+ 	<select id="getFavoriteList" parameterType="int" resultType="java.util.HashMap">
+  		SELECT * FROM favorite WHERE u_id=#{u_id};
+  	</select>
+  	<select id="getFavoriteExist" parameterType="FavoriteDTO" resultType="int">
+  		SELECT COUNT(*) FROM favorite WHERE u_id=#{u_id} AND pro_id=(SELECT pro_id FROM product WHERE name=#{pro_name});
+  	</select>
+  	<insert id="addFavorite" parameterType="FavoriteDTO"> 
+        INSERT INTO favorite VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM favorite) AS t), #{f_id}, #{u_id}, (SELECT pro_id FROM product WHERE name=#{pro_name}));
+    </insert>
+  	<delete id="deleteFavorite" parameterType="int">
+  		DELETE FROM favorite WHERE u_id=#{u_id} AND f_id=#{f_id};
+  	</delete>
+  	
+  	
+  	<select id="getOrderList" parameterType="int" resultType="java.util.HashMap">
+  		SELECT * FROM orders WHERE u_id=#{u_id};
+  	</select>
+  	<select id="getUserOrder" parameterType="int" resultType="OrderDTO">
+  		SELECT * FROM orders WHERE u_id=#{u_id} AND o_id=#{o_id};
+  	</select>
+  	<insert id="addUserOrder" parameterType="OrderDTO"> 
+        INSERT INTO orders VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM orders) AS t), #{o_id}, #{u_id}, #{pro_id}, #{cnt}, #{discount}, #{discount_rate}, #{price}, #{pay_id}, #{time}, #{addr}, #{addr_detail}, 0, NULL, NULL);
+    </insert>
+  	<delete id="deleteUserOrder" parameterType="int">
+  		DELETE FROM orders WHERE u_id=#{u_id} AND o_id=#{o_id};
+  	</delete>
+  	
+  	<insert id="addUserReview" parameterType="ReviewDTO">
+  		INSERT INTO reviews VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM reviews) AS t), #{r_id}, #{u_id}, #{star}, #{review}, #{img}, #{date});
+  	</insert>
+  	
+  	<insert id="addUserQuestion" parameterType="QuestionDTO">
+  		INSERT INTO question VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM question) AS t), #{q_id}, #{u_id}, #{question}, #{answer});
+  	</insert>
+  	
+  	
+  	<select id="getUserByUID" parameterType="int" resultType="UserDTO">
+  		SELECT * FROM user WHERE u_id=#{u_id};
+  	</select>
+  	
+  	
+  	<select id="getAddrList" parameterType="int" resultType="java.util.HashMap">
+  		SELECT * FROM address WHERE u_id=#{u_id};
+  	</select>
+  	<select id="getUserAddr" parameterType="int" resultType="AddressDTO">
+  		SELECT * FROM address WHERE u_id=#{u_id} AND a_id=#{a_id};
+  	</select>
+  	<insert id="addUserAddr" parameterType="AddressDTO"> 
+        INSERT INTO address VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM address) AS t), #{a_id}, #{u_id}, #{addr}, #{addr_detail});
+    </insert>
+    <update id="setUserAddr" parameterType="AddressDTO">
+  		UPDATE address
+  		<trim prefix="SET" suffixOverrides=",">
+  			<if test='addr != null'>
+  				addr=#{addr},
+  			</if>
+  			<if test='addr_detail != null'>
+  				addr_detail=#{addr_detail}
+  			</if>
+  		</trim>
+  		WHERE u_id=#{u_id} AND a_id=#{a_id};
+  	</update>
+  	<delete id="deleteUserAddr" parameterType="int">
+  		DELETE FROM address WHERE u_id=#{u_id} AND a_id=#{a_id};
+  	</delete>
+  	
+  	
+  	<select id="getPayList" parameterType="int" resultType="java.util.HashMap">
+  		SELECT * FROM payment WHERE u_id=#{u_id};
+  	</select>
+  	<select id="getUserPay" parameterType="int" resultType="PaymentDTO">
+  		SELECT * FROM payment WHERE u_id=#{u_id} AND pay_id=#{pay_id};
+  	</select>
+  	<insert id="addUserPay" parameterType="PaymentDTO"> 
+        INSERT INTO payment VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM payment) AS t), #{pay_id}, #{u_id}, #{is_main}, #{is_person}, #{b_name}, #{c_number}, #{c_term}, #{c_passwd}, #{c_detail});
+    </insert>
+    <update id="setUserPay" parameterType="PaymentDTO">
+  		UPDATE payment
+  		<trim prefix="SET" suffixOverrides=",">
+  			<if test='is_main != null'>
+  				is_main=#{is_main},
+  			</if>
+  			<if test='is_person != null'>
+  				is_person=#{is_person},
+  			</if>
+  			<if test='b_name != null'>
+  				b_name=#{b_name},
+  			</if>
+  			<if test='c_number != null'>
+  				c_number=#{c_number},
+  			</if>
+  			<if test='c_term != null'>
+  				c_term=#{c_term},
+  			</if>
+  			<if test='c_passwd != null'>
+  				c_passwd=#{c_passwd},
+  			</if>
+  			<if test='c_detail != null'>
+  				c_detail=#{c_detail},
+  			</if>
+  		</trim>
+  		WHERE u_id=#{u_id} AND pay_id=#{pay_id};
+  	</update>
+  	<update id="payReset" parameterType="int">
+    	UPDATE payment SET is_main=0 WHERE u_id=#{u_id};
+    </update>  
+  	<select id="getIsMainPay" parameterType="int" resultType="int">
+  		SELECT * FROM (SELECT IFNULL(is_main, -1) FROM payment WHERE u_id=#{u_id} AND pay_id=#{pay_id}) as t;
+  	</select>
+  	<select id="getPayCnt" parameterType="int" resultType="int">
+  		SELECT COUNT(*) FROM payment WHERE u_id=#{u_id};
+  	</select>
+  	<update id="setNewMainPay" parameterType="int">
+  		UPDATE payment SET is_main=1 WHERE u_id=#{u_id} AND pay_id=(SELECT * FROM (SELECT IFNULL(MIN(pay_id), -1) FROM payment WHERE u_id=#{u_id} AND is_main=0) as t);
+  	</update>
+  	<select id="getMainPay" parameterType="int" resultType="int">
+  		SELECT pay_id FROM payment WHERE u_id=#{u_id} AND is_main=1;
+  	</select>
+  	<delete id="deleteUserPay" parameterType="int">
+  		DELETE FROM payment WHERE u_id=#{u_id} AND pay_id=#{pay_id};
+  	</delete>
+  	
+  	
+  	<select id="getSearchResult" parameterType="String" resultType="java.util.HashMap">
+  		SELECT * FROM (SELECT r.r_id, r.pro_id, r_name, r.img, r.time, b.cnt AS r_cnt, b.star, t.price FROM recipe AS r INNER JOIN (SELECT COUNT(*) AS cnt, AVG(star) AS star FROM reviews GROUP BY r_id) AS b left JOIN (SELECT pro_id, price from product) AS t ON r.pro_id=t.pro_id) AS recipes WHERE recipes.r_name LIKE CONCAT('%','#{key}','%');
+  	</select>
+</mapper>

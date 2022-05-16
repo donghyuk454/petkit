@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.petkit.mapper.AdminMapper">
+	<select id="getAdminUserCnt" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM admin WHERE id=#{id} AND passwd=#{passwd};
+	</select>
+	<insert id="addAdmin" parameterType="String">
+		INSERT INTO admin VALUES (#{id}, #{passwd});
+	</insert>
+	<update id="setAdmin" parameterType="String">
+  		UPDATE admin
+  		<trim prefix="SET" suffixOverrides=",">
+	  		<if test='passwd != null'>
+	  			passwd=#{passwd},
+	  		</if>
+  		</trim>
+  		WHERE id=#{id};
+  	</update>
+  	<delete id="deleteAdmin" parameterType="String">
+  		DELETE FROM admin WHERE id=#{id};
+  	</delete>
+  	<select id="getAdminOrder" parameterType="int" resultType="java.util.HashMap">
+  		SELECT * FROM orders WHERE o_id=#{o_id};
+  	</select>
+  	<update id="setAdminOrder" parameterType="OrderDTO">
+  		UPDATE orders
+  		<trim prefix="SET" suffixOverrides=",">
+	  		<if test='addr != null'>
+	  			addr=#{addr},
+	  			addr_detail=#{addr_detail},
+	  		</if>
+	  		<if test='status != null'>
+	  			status=#{status},
+	  		</if>
+	  		<if test='code != null'>
+	  			code=#{code},
+	  		</if>
+	  		<if test='invoice != null'>
+	  			invoice=#{invoice},
+	  		</if>
+  		</trim>
+  		WHERE o_id=#{o_id};
+  	</update>
+  	<delete id="deleteAdminOrder" parameterType="int">
+  		DELETE FROM orders WHERE o_id=#{o_id};
+  	</delete>
+  	<select id="getAdminQuestion" parameterType="int" resultType="java.util.HashMap">
+  		SELECT A.q_id, A.u_id, A.r_id, B.u_name, A.question, A.answer, A.imgs FROM question A JOIN user B ON A.u_id = B.u_id WHERE A.q_id=#{q_id};
+  	</select>
+  	<update id="setAdminQuestion">
+  		UPDATE question
+  		<trim prefix="SET" suffixOverrides=",">
+	  		<if test='answer != null'>
+	  			answer=#{answer}
+	  		</if>
+  		</trim>
+  		WHERE q_id=#{q_id};
+  	</update>
+  	<delete id="deleteAdminQuestion" parameterType="int">
+  		DELETE FROM question WHERE q_id=#{q_id};
+  	</delete>
+  	
+  	<select id="getAdminNotice" parameterType="int" resultType="java.util.HashMap">
+  		SELECT * FROM notice WHERE n_id=#{n_id};
+  	</select>
+  	<insert id="addAdminNotice" parameterType="NoticeDTO"> 
+        INSERT INTO notice VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM notice) AS t), #{n_id}, #{n_title}, #{n_context});
+    </insert>
+  	<update id="setAdminNotice" parameterType="NoticeDTO">
+  		UPDATE notice
+  		<trim prefix="SET" suffixOverrides=",">
+	  		<if test='n_title != null'>
+	  			n_title=#{n_title},
+	  		</if>
+	  		<if test='n_context != null'>
+	  			n_context=#{n_context},
+	  		</if>
+  		</trim>
+  		WHERE n_id=#{n_id};
+  	</update>
+  	<delete id="deleteAdminNotice" parameterType="int">
+  		DELETE FROM notice WHERE n_id=#{n_id};
+  	</delete>
+  	
+  	<select id="getAdminMainNotice" parameterType="int" resultType="java.util.HashMap">
+  		SELECT * FROM main_notice WHERE n_id=#{n_id};
+  	</select>
+  	<insert id="addAdminMainNotice" parameterType="NoticeDTO"> 
+        INSERT INTO main_notice VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM notice) AS t), #{n_id}, #{n_title}, #{n_context});
+    </insert>
+  	<update id="setAdminMainNotice" parameterType="NoticeDTO">
+  		UPDATE main_notice
+  		<trim prefix="SET" suffixOverrides=",">
+	  		<if test='n_title != null'>
+	  			n_title=#{n_title},
+	  		</if>
+	  		<if test='n_context != null'>
+	  			n_context=#{n_context},
+	  		</if>
+  		</trim>
+  		WHERE n_id=#{n_id};
+  	</update>
+  	<delete id="deleteAdminMainNotice" parameterType="int">
+  		DELETE FROM main_notice WHERE n_id=#{n_id};
+  	</delete>
+  	
+  	
+  	<select id="getAdminCoupon" parameterType="int" resultType="java.util.HashMap">
+  		SELECT * FROM coupon WHERE c_id=#{c_id};
+  	</select>
+  	<insert id="addAdminCoupon" parameterType="CouponDTO"> 
+        INSERT INTO coupon VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM coupon) AS t), #{c_id}, #{pro_id}, #{c_name}, #{discount}, #{discount_rate});
+    </insert>
+  	<update id="setAdminCoupon" parameterType="CouponDTO">
+  		UPDATE coupon
+  		<trim prefix="SET" suffixOverrides=",">
+  			<if test='pro_id != null'>
+	  			pro_id=#{pro_id},
+	  		</if>
+  			<if test='c_name != null'>
+	  			c_name=#{c_name},
+	  		</if>
+	  		<if test='discount != null'>
+	  			discount=#{discount},
+	  		</if>
+	  		<if test='discount_rate != null'>
+	  			discount_rate=#{discount_rate},
+	  		</if>
+  		</trim>
+  		WHERE c_id=#{c_id};
+  	</update>
+  	<delete id="deleteAdminCoupon" parameterType="int">
+  		DELETE FROM coupon WHERE c_id=#{c_id};
+  	</delete>
+  	<insert id="addUserCoupon" parameterType="UserCouponDTO"> 
+        INSERT INTO user_coupon VALUES ((SELECT * from (SELECT IFNULL(MAX(idx)+1, 1) FROM user_coupon) AS t), #{u_id}, #{c_id}, #{is_avail}, #{term_start}, #{term_end});
+    </insert>
+</mapper>

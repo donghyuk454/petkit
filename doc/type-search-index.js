@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"com.petkit.controller","l":"EtcController"},{"p":"com.petkit.controller","l":"RecipeController"},{"p":"com.petkit.controller","l":"UserController"}];updateSearchResults();
