@@ -1,17 +1,22 @@
-# petkit
+# petkit 프로젝트 설명
 
-petkit란 반려동물 간식 밀키트 온라인 커머스입니다.
+petkit란 반려동물 간식을 밀키트의 형태로 판매하는 온라인 커머스입니다.
+해당 프로젝트는 petkit의 backend 프로젝트입니다.
+(다만, 미완성 프로젝트로 세션이나 결제 시스템 등 일부 구현이 미완료된 내용이 있습니다.)
 
 # petkit 백엔드
 
 1. Architecture
+
 ![image](https://user-images.githubusercontent.com/20418155/172601146-591edc66-01a6-4a7b-a66f-e18d9ef67778.png)
+
 
 2. 주요 개발 내용
 - DB 설계, 제작, 관리
 - 사용자 계정, 게시물, 주문, 리뷰 등에 대한 CRUD 쿼리 제작
 - Image file를 처리하기 위한 FileHandler 제작
 - 개발한 프로젝트를 압축한 .war파일을 FileZilla를 활용해 Ec2 서버로 옮겨 배포
+
 
 3. 특징
 - 서버에 MVC 패턴의 RESTful한 API를 제작하였으며, JDBC를 통해 쿼리 작성
