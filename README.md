@@ -8,7 +8,7 @@
 
 ## Architecture
 
-    ![image](https://user-images.githubusercontent.com/20418155/172601146-591edc66-01a6-4a7b-a66f-e18d9ef67778.png)
+  ![image](https://user-images.githubusercontent.com/20418155/172601146-591edc66-01a6-4a7b-a66f-e18d9ef67778.png)
 
 
 ## 주요 개발 내용
