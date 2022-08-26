@@ -19,7 +19,7 @@
 
 
 ## 특징
-  - 서버에 MVC 패턴의 RESTful한 API를 제작하였으며, JDBC를 통해 쿼리 작성
+  - 서버에 MVC 패턴의 RESTful한 API를 제작하였으며, mybatis 를 사용하여 mapper 에 쿼리 작성
   - 개발 이슈는 Notion 페이지를 만들어 팀원들과 공유
     (관련 링크: https://resilient-ox-26f.notion.site/3b9a95b584884ebfa7d474b1850b144c?v=e811270fb0e3489e9cb74e3c386b6f19)
   - 해당 프로젝트는 서울대 융합과학기술원에서 지원을 받아 제작하였습니다.
